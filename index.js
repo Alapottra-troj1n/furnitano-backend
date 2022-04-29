@@ -28,10 +28,7 @@ const run = async() =>{
         const productCollection = database.collection('products');
 
         //home api 
-        app.get('/', async(req, res) =>{
-            res.json({message : 'hello world'})
-
-        })
+       
 
         app.get('/products', async(req, res) =>{
 
@@ -53,6 +50,12 @@ const run = async() =>{
 }
 
 run().catch(console.dir);
+
+
+app.get('/', async(req, res) =>{
+    res.json({message : 'hello world'})
+
+})
 
 
 
