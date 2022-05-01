@@ -28,7 +28,7 @@ const run = async() =>{
         const productCollection = database.collection('products');
 
         
-       
+       //Show all products functionality 
 
         app.get('/products', async(req, res) =>{
 
@@ -39,6 +39,8 @@ const run = async() =>{
 
         })
 
+        //Product by id functionality
+
         app.get('/products/:id', async(req, res) =>{
             const id = req.params.id;
             const query = { _id: ObjectId(id)};
@@ -46,6 +48,23 @@ const run = async() =>{
             res.send(user);
 
             
+
+        })
+
+        //Delivered Functionality
+
+        app.put('/deliver/:id', async(req, res) =>{
+            const id = req.params.id;
+            const updatedData = req.body;
+            const filter = {_id: ObjectId(id)};
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    quantity: updatedData.updatedQuantity
+                }
+            };
+            const result = await productCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
 
         })
 
