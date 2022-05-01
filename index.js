@@ -57,7 +57,7 @@ const run = async() =>{
             const id = req.params.id;
             const updatedData = req.body;
             const filter = {_id: ObjectId(id)};
-            const options = { upsert: true };
+            const options = { upsert: false };
             const updatedDoc = {
                 $set: {
                     quantity: updatedData.updatedQuantity
@@ -66,7 +66,27 @@ const run = async() =>{
             const result = await productCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
 
-        })
+        });
+
+        //Restock Functionality
+
+        app.put('/restock/:id', async(req, res) =>{
+            const id = req.params.id;
+            const updatedData = req.body;
+            const filter = {_id: ObjectId(id)};
+            const options = { upsert: false };
+            const updatedDoc = {
+                $set: {
+                    quantity: updatedData.data
+                }
+            };
+            const result = await productCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+
+        });
+
+ 
+
 
 
     }
