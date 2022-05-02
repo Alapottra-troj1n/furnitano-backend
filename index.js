@@ -85,6 +85,39 @@ const run = async() =>{
 
         });
 
+        //add a furniture 
+        app.post('/manage/add', async(req, res) =>{
+            const addedProuduct = req.body;
+            const newProduct = {
+                "image" : addedProuduct.productImageUrl,
+                "name" : addedProuduct.productName,
+                "description" : addedProuduct.productDescription,
+                "price" : addedProduct.productPrice,
+                "supplier" : addedProuduct.productSupplier,
+                "quantity" : addedProuduct.productQuantity
+
+            };
+            const result = await productCollection.insertOne(newProduct);
+            res.send(result);
+
+        })
+
+
+        // "image": "https://i.ibb.co/GPdTz46/5.webp",
+        // "name": "Morr Leather Chair",
+        // "description": "You and your family have a new go-to comfort spot when you add this double manual reclining sofa to your den or living room. It's upholstered in a mix of rich brown top grain leather and matching tone faux leather to match most decor.",
+        // "price": 350,
+        // "supplier": "Morr",
+        // "quantity": 15
+
+        // const productName = e.target.addProductName.value;
+        // const productEmail = email;
+        // const productPrice = e.target.addPrice.value;
+        // const productImageUrl = e.target.addImage.value;
+        // const productDescription = e.target.addDes.value;
+        // const productSupplier = e.target.addSupplier.value;
+        // const productQuantity = e.target.addQuantity.value;
+
  
 
 
