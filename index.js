@@ -87,14 +87,14 @@ const run = async() =>{
 
         //add a furniture 
         app.post('/manage/add', async(req, res) =>{
-            const addedProuduct = req.body;
+            const addedProduct = req.body;
             const newProduct = {
-                "image" : addedProuduct.productImageUrl,
-                "name" : addedProuduct.productName,
-                "description" : addedProuduct.productDescription,
+                "image" : addedProduct.productImageUrl,
+                "name" : addedProduct.productName,
+                "description" : addedProduct.productDescription,
                 "price" : addedProduct.productPrice,
-                "supplier" : addedProuduct.productSupplier,
-                "quantity" : addedProuduct.productQuantity
+                "supplier" : addedProduct.productSupplier,
+                "quantity" : addedProduct.productQuantity
 
             };
             const result = await productCollection.insertOne(newProduct);
