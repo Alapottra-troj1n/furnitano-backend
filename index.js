@@ -103,6 +103,15 @@ const run = async() =>{
 
         })
 
+        //delete a furniture
+
+        app.delete('/delete/:id', async(req, res) =>{
+                const id = req.params.id;
+                const query = {_id : ObjectId(id)};
+                const results = await productCollection.deleteOne(query);
+                res.send(results);
+        })
+
 
     
 
