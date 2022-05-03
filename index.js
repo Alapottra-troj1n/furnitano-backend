@@ -87,10 +87,12 @@ const run = async () => {
 
         //add a furniture 
         app.post('/manage/add', async (req, res) => {
+            
             const addedProduct = req.body;
+            console.log(req.body);
             const newProduct = {
                 "image": addedProduct.productImageUrl,
-                "email": addedProduct.email,
+                "email": addedProduct.productEmail,
                 "name": addedProduct.productName,
                 "description": addedProduct.productDescription,
                 "price": addedProduct.productPrice,
