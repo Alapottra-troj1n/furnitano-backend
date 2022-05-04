@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const slugify = require('slugify');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
@@ -10,6 +10,24 @@ const port = process.env.PORT || 5000;
 //middlewares
 app.use(cors());
 app.use(express.json());
+
+//verify function
+
+function verifyToken(req, res, next) {
+    const authHeader = req.headers.authorization;
+    console.log(authHeader);
+    if (!authHeader) {
+        return res.status(401).send({ error: 'verification failed. access denied.' });
+    }
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).send({ error: 'access denied' });
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
 
 
 
@@ -26,6 +44,14 @@ const run = async () => {
         await client.connect();
         const database = client.db('furnitano');
         const productCollection = database.collection('products');
+
+        //giving webtoken
+
+        app.post('/getToken', async (req, res) => {
+            const userEmail = req.body;
+            const jwtToken = jwt.sign(userEmail, process.env.TOKEN_SECRET);
+            res.send({ jwtToken });
+        })
 
 
         //Show all products functionality 
@@ -116,13 +142,21 @@ const run = async () => {
 
         //fetch my inventory
 
-        app.get('/myinventory', async (req, res) => {
+        app.get('/myinventory',verifyToken, async (req, res) => {
             const email = req.query.email;
+            const jwtEmail = req.decoded;
+
+            if(email === jwtEmail){
+                const query = { email: email };
+                const cursor = productCollection.find(query);
+                const orders = await cursor.toArray();
+                res.send(orders);
+
+            }else{
+                res.status(403).send({error: 'access denied'})
+            }
             //
-            const query = { email: email };
-            const cursor = productCollection.find(query);
-            const orders = await cursor.toArray();
-            res.send(orders);
+          
 
 
         })
