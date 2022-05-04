@@ -13,22 +13,6 @@ app.use(express.json());
 
 //verify function
 
-function verifyToken(req, res, next) {
-    const authHeader = req.headers.authorization;
-    console.log(authHeader);
-    if (!authHeader) {
-        return res.status(401).send({ error: 'verification failed. access denied.' });
-    }
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).send({ error: 'access denied' });
-        }
-        req.decoded = decoded;
-        next();
-    })
-}
-
 
 
 //connect to mongodb
@@ -113,7 +97,7 @@ const run = async () => {
 
         //add a furniture 
         app.post('/manage/add', async (req, res) => {
-            
+
             const addedProduct = req.body;
             console.log(req.body);
             const newProduct = {
@@ -142,21 +126,15 @@ const run = async () => {
 
         //fetch my inventory
 
-        app.get('/myinventory',verifyToken, async (req, res) => {
+        app.get('/myinventory', async (req, res) => {
             const email = req.query.email;
-            const jwtEmail = req.decoded;
+            console.log(req.headers.authorization);
+            const query = { email: email };
+            const cursor = productCollection.find(query);
+            const orders = await cursor.toArray();
+            res.send(orders);
 
-            if(email === jwtEmail){
-                const query = { email: email };
-                const cursor = productCollection.find(query);
-                const orders = await cursor.toArray();
-                res.send(orders);
 
-            }else{
-                res.status(403).send({error: 'access denied'})
-            }
-            //
-          
 
 
         })
