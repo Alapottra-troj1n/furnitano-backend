@@ -11,8 +11,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-//verify function
-
 
 
 //connect to mongodb
@@ -20,6 +18,23 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://furnitano-admin:${process.env.DB_PASS}@furnitano.ykxho.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+
+//verify jwt 
+function verifyJWT(req, res, next) {
+
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send({error :'unauthorized access'});
+    }
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(403).send({error: 'forbidden access' });
+        }
+        req.decodedEmail = decoded;
+        next();
+    })
+}
 
 const run = async () => {
 
@@ -126,13 +141,23 @@ const run = async () => {
 
         //fetch my inventory
 
-        app.get('/myinventory', async (req, res) => {
+        app.get('/myinventory',verifyJWT, async (req, res) => {
+            
+            const decodedEmail = req.decodedEmail.userEmail;
+            console.log(decodedEmail)
             const email = req.query.email;
-            console.log(req.headers.authorization);
-            const query = { email: email };
-            const cursor = productCollection.find(query);
-            const orders = await cursor.toArray();
-            res.send(orders);
+            if(decodedEmail === email){
+                console.log(req.headers.authorization);
+                const query = { email: email };
+                const cursor = productCollection.find(query);
+                const orders = await cursor.toArray();
+                res.send(orders);
+
+            }else{
+
+                res.status(403).send({error: 'forbidden access'})
+            }
+       
 
 
 
